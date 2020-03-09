@@ -1,0 +1,28 @@
+ComputerData <- read.csv(choose.files())
+
+attach(ComputerData)
+
+str(ComputerData)
+
+summary(ComputerData)
+
+
+ComputerData1<-ComputerData[-c(1)]
+
+pairs(ComputerData)
+
+attach(ComputerData1)
+
+cor(ComputerData1[-c(6,7,8)])
+
+library(corpcor)
+library(car)
+m1<-lm(price~ComputerData1$speed +ComputerData1$hd+ComputerData1$ram +ComputerData1$screen +ComputerData1$cd +ComputerData1$multi +ComputerData1$premium +ComputerData1$ads +ComputerData1$trend,data=ComputerData1)
+summary(m1)
+
+#All coeficients are significant, r square value <0.8, adding transformation
+
+m2<-lm(price~sqrt(ComputerData1$speed) +sqrt(ComputerData1$hd)+sqrt(ComputerData1$ram) +sqrt(ComputerData1$screen) +ComputerData1$cd +ComputerData1$multi +ComputerData1$premium +sqrt(ComputerData1$ads) +ComputerData1$trend,data=ComputerData1)
+summary(m2)
+
+#R-square value is close to 0.8 and all coeficients are significant
