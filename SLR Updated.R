@@ -1,0 +1,200 @@
+#1) Calories_consumed-> predict weight gained using calories consumed
+
+
+CaloriesData <- read.csv(choose.files())
+attach(CaloriesData)
+
+str(CaloriesData)
+
+summary(CaloriesData)
+
+plot(CaloriesData$Weight.gained..grams.,CaloriesData$Calories.Consumed)
+
+weight <- CaloriesData$Weight.gained..grams.
+calories <- CaloriesData$Calories.Consumed
+
+#correlation coeff r
+
+cor(weight,calories) #0.946991 | R is 1
+
+#simple linear regression
+
+reg<-lm(calories~weight) # lm(Y ~ X)
+
+summary(reg) #R-squared: 0.8968
+
+
+#prediction model
+
+pred <- predict(reg,interval = "predict") 
+pred
+#PVALUE IS less than 0.05 so we can use B0 and B1
+
+a<- confint(reg,level = 0.95)
+a
+
+# Trying to do better R sqaure value model
+
+reg1<-lm(weight~log(Calories.Consumed))  # Using logarthmic transformation
+
+summary(reg1)  # R-squared value is 0.8077
+
+a1<- confint(reg1,level = 0.95)
+a1
+
+#prediction model
+
+pred1 <- predict(reg1,interval = "predict") 
+pred1
+
+#Final Model where we can go with "simple linear regression* with R-squared: 0.8968
+#We can accept the final value.
+
+#2) Delivery_time -> Predict delivery time using sorting time 
+
+
+
+DeliveryData <- read.csv(choose.files())
+attach(DeliveryData)
+
+str(DeliveryData)
+
+summary(DeliveryData)
+
+plot(DeliveryData$Delivery.Time,DeliveryData$Sorting.Time)
+
+timings<- DeliveryData$Delivery.Time
+sortings <- DeliveryData$Sorting.Time
+
+#correlation coeff r
+
+cor(timings,sortings) #0.8259973 | R is 1
+
+#simple linear regression
+
+reg<-lm(sortings~timings) # lm(Y ~ X)
+
+summary(reg) #R-squared: 0.6823
+
+#prediction model
+
+pred <- predict(reg,interval = "predict") 
+pred
+
+
+a<- confint(reg,level = 0.95)
+a
+
+#P-value is less than 0.05. So correlation is significant and also R-Square value is 0.6823. 
+#Model 68.23%. which is not proper. We need to go further for more test.
+
+reg1<-lm(timings~log(sortings))  # Using logarthmic transformation
+
+summary(reg1)  # R-squared value is 0.6954
+
+pred1 <- predict(reg1,interval = "predict") 
+pred1
+
+a1<- confint(reg1,level = 0.95)
+a1
+
+#P-value is less than 0.05. So correlation is significant and also R-Square value is 0.6823. 
+#Model 68.23%. which is not proper. We need to go further for more test.
+
+install.packages("mvinfluence")
+
+library(mvinfluence)
+
+influenceIndexPlot(reg1)
+
+delivery <- lm(Delivery.Time ~ Sorting.Time, data = DeliveryData[c(-5,-9,-21),])
+summary(delivery)
+
+#R-Square value is increased to 0.8332. 
+#That's mean this model will predict the output 83.32% time correct
+
+#3) Emp_data -> Build a prediction model for Churn_out_rate
+
+
+EmpData <- read.csv(choose.files())
+attach(EmpData)
+
+str(EmpData)
+
+summary(EmpData)
+
+plot(EmpData$Salary_hike,EmpData$Churn_out_rate)
+
+Salary <- EmpData$Salary_hike
+Churn <- EmpData$Churn_out_rate
+
+#correlation coeff r
+
+cor(Salary,Churn) #R is -0.9117216 (close to -0.89) | strong negative Correlation
+
+#simple linear regression
+
+reg<-lm(Churn~Salary) # lm(Y ~ X)
+summary(reg) #R is 0.8312 which is greater than 0.8 in general
+
+pred <- predict(reg,interval = "predict") 
+pred
+
+
+a<- confint(reg,level = 0.95)
+a
+
+#Trying for better transformation model for R sqaure model
+
+#Logarithmic Transformation
+
+reg1<-lm(Salary~log(Churn)) 
+summary(reg1) # R is 0.8735
+
+pred1 <- predict(reg1,interval = "predict") 
+pred1
+
+a1<- confint(reg1,level = 0.95)
+a1
+
+Final <- cbind(sal=EmpData$Salary,Rate = EmpData$Churn,Pred_rate=pred1)
+
+View(Final)
+
+rmse<-sqrt(mean((pred1-Churn)^2))
+rmse
+
+# Where is R is 0.8735, so we can accept this prediction model is better.
+
+#4) Salary_hike -> Build a prediction model for Salary_hike
+
+SalaryData <- read.csv(choose.files())
+
+attach(SalaryData)
+
+str(SalaryData)
+
+summary(SalaryData)
+
+plot(SalaryData$YearsExperience,SalaryData$Salary)
+
+Exp <- SalaryData$YearsExperience
+Sal <- SalaryData$Salary
+
+#correlation coeff r
+
+cor(Exp,Sal) #R is 0.9782416 | strong Correlation
+
+#simple linear regression
+
+reg<-lm(Sal~Exp) # lm(Y ~ X)
+summary(reg) #R is 0.957 which is greater than 0.8 in general
+
+pred <- predict(reg,interval = "predict") 
+pred
+
+
+a<- confint(reg,level = 0.95)
+a
+
+#Acceptable R square value is 0.957. This model is best for prediction.
